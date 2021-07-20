@@ -15,7 +15,7 @@ class Users:
     
     def getSelfInformation(self):
         query = { "_id": self.id }
-        return self.col_users.findOne(query)
+        return self.col_users.find_one(query)
     
     def getAllUsers(self):
         return self.col_users.find()
@@ -35,3 +35,4 @@ class Users:
     
     def updateArrived(self, arrived):
         update = { "$set": {'arrived': arrived} }
+        return self.col_users.update_one({"_id":self.id}, update)

@@ -3,12 +3,15 @@ from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import bp_users
 from flask import request
+import os
+from dotenv import load_dotenv
 
 
 auth = HTTPBasicAuth()
 
+load_dotenv()
 users = {
-    "staffname": generate_password_hash("stafftoken")
+    os.getenv('HTTP_AUTH_USERNAME'): generate_password_hash(os.getenv('HTTP_AUTH_PASSWORD'))
 }
 
 @auth.verify_password
@@ -18,6 +21,7 @@ def verify_password(username, password):
         return username
 
 @bp_users.route('/api/vips', methods = ['GET'])
+@auth.login_required
 def getvips():
     try:
         userModel = Users()
@@ -29,13 +33,14 @@ def getvips():
         return {'ok':False, 'message': 'Something wrong.'}
 
 @bp_users.route('/api/vips', methods = ['POST'])
+@auth.login_required
 def addvips():
     try:
         name = request.form['name']
         country_of_origin = request.form['country_of_origin']
         eta = request.form['eta']
         photo = request.form['photo']
-        attributes = request.form['attributes']
+        attributes = request.form.getlist('attributes')
         arrived = False
         userModel = Users()
         userModel.addUser(name, country_of_origin, eta, photo, arrived, attributes)
@@ -44,6 +49,7 @@ def addvips():
         return {'ok':False, 'message': 'Something wrong.'}
 
 @bp_users.route('/api/vips/<user_id>', methods = ['GET'])
+@auth.login_required
 def getvip(user_id):
     try:
         userModel = Users(user_id)
@@ -54,6 +60,7 @@ def getvip(user_id):
         return {'ok':False, 'message': 'Something wrong.'}
 
 @bp_users.route('/api/vips/<user_id>', methods = ['PUT'])
+@auth.login_required
 def updatevip(user_id):
     try:
         userModel = Users(user_id)
@@ -61,17 +68,23 @@ def updatevip(user_id):
         country_of_origin = request.form['country_of_origin']
         eta = request.form['eta']
         photo = request.form['photo']
-        attributes = request.form['attributes']
+        attributes = request.form.getlist('attributes')
         userModel.updateUser(name, country_of_origin, eta, photo, attributes)
         return {'ok':True, 'message': 'Successfully update the user.'}
     except:
         return {'ok':False, 'message': 'Something wrong.'}
 
 @bp_users.route('/api/vips/<user_id>/arrived', methods = ['PATCH'])
+@auth.login_required
 def updatearrived(user_id):
     try:
         userModel = Users(user_id)
         arrived = request.form['arrived']
+        if type(arrived) == str:
+            if arrived == 'true' or arrived =='True':
+                arrived = True
+            else:
+                arrived = False
         userModel.updateArrived(arrived)
         return {'ok':True, 'message': 'Successfully update the user.'}
     except:
