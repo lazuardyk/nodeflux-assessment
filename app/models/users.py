@@ -13,6 +13,10 @@ class Users:
         if id:
             self.id = ObjectId(id)
     
+    def getSelfInformation(self):
+        query = { "_id": self.id }
+        return self.col_users.findOne(query)
+    
     def getAllUsers(self):
         return self.col_users.find()
     
@@ -25,6 +29,9 @@ class Users:
         query = { "_id": self.id }
         return self.col_users.delete_one(query)
     
-    def updateUser(self, nama, email, alamat, telepon, biografi, website, image):
-        update = { "$set": {'nama':nama, 'email':email, 'alamat':alamat, 'telepon':telepon, "biografi" : biografi, "website":website, "image":image} }
+    def updateUser(self, name, country_of_origin, eta, photo, attributes):
+        update = { "$set": {'name':name, 'country_of_origin':country_of_origin, 'eta':eta, 'photo':photo, "attributes":attributes} }
         return self.col_users.update_one({"_id":self.id}, update)
+    
+    def updateArrived(self, arrived):
+        update = { "$set": {'arrived': arrived} }
