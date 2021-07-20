@@ -8,6 +8,7 @@
 ## Installation
 
 - Run `python setup.py`
+- Rename .env.example to .env
 
 ## Usage
 

@@ -68,7 +68,7 @@ def updatevip(user_id):
         return {'ok':False, 'message': 'Something wrong.'}
 
 @bp_users.route('/api/vips/<user_id>/arrived', methods = ['PATCH'])
-def updatevip(user_id):
+def updatearrived(user_id):
     try:
         userModel = Users(user_id)
         arrived = request.form['arrived']
